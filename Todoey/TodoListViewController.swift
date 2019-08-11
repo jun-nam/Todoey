@@ -65,7 +65,9 @@ class TodoListViewController: UITableViewController {
         //button inside dialog
         let action = UIAlertAction(title: "Add Item", style: .default) { (alertAction) in
  
-            self.itemArray.append(ToDoItem(description: textField.text!))
+            let item = ToDoItem()
+            item.title = textField.text!
+            self.itemArray.append(item)
             
             self.saveToDoItems()
             //self.defaults.set(self.itemArray, forKey: "ToDoListArray") //to persist data
@@ -78,30 +80,30 @@ class TodoListViewController: UITableViewController {
     
     func saveToDoItems() {
         
-        let encoder = PropertyListEncoder()
-        
-        do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
-        } catch {
-            print("Error encoding item array: \(error)")
-        }
+//        let encoder = PropertyListEncoder()
+//
+//        do {
+//            let data = try encoder.encode(itemArray)
+//            try data.write(to: dataFilePath!)
+//        } catch {
+//            print("Error encoding item array: \(error)")
+//        }
         
         tableView.reloadData()
     }
     
     func loadItems() {
         
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            
-            do {
-                itemArray = try decoder.decode([ToDoItem].self, from: data)
-            } catch {
-                print("Error decoding item array: \(error)")
-            }
-        }
-        
+//        if let data = try? Data(contentsOf: dataFilePath!) {
+//            let decoder = PropertyListDecoder()
+//
+//            do {
+//                itemArray = try decoder.decode([ToDoItem].self, from: data)
+//            } catch {
+//                print("Error decoding item array: \(error)")
+//            }
+//        }
+//
     }
 }
 
