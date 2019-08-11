@@ -10,14 +10,18 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    var itemArray = ["Find Mike", "Buy Eggos", "Destory Demogorgons"]
+    var itemArray : [ToDoItem] = []// = [item1, item2, item3]
     var defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+
+        for i in 1...30 {
+            itemArray.append(ToDoItem(description: "item\(i)"))
+        }
         
-        if let items = defaults.array(forKey: "ToDoListArray") as? [String] {
+        if let items = defaults.array(forKey: "ToDoListArray") as? [ToDoItem] {
             print(items)
             itemArray = items
         }
@@ -33,20 +37,17 @@ class TodoListViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
-        cell.textLabel?.text = itemArray[indexPath.row]
+        let curItem = itemArray[indexPath.row]
+        cell.textLabel?.text = curItem.title
+        cell.accessoryType = curItem.isDone ? .checkmark : .none
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let selectedCell = tableView.cellForRow(at: indexPath)
-        
-        if selectedCell?.accessoryType == .checkmark{
-            selectedCell?.accessoryType = .none
-        } else {
-            selectedCell?.accessoryType = .checkmark
-        }
+        itemArray[indexPath.row].isDone = !itemArray[indexPath.row].isDone
+        tableView.reloadData()
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -67,7 +68,7 @@ class TodoListViewController: UITableViewController {
         //button inside dialog
         let action = UIAlertAction(title: "Add Item", style: .default) { (alertAction) in
  
-            self.itemArray.append(textField.text!)
+            self.itemArray.append(ToDoItem(description: textField.text!))
             
             self.defaults.set(self.itemArray, forKey: "ToDoListArray") //to persist data
             
