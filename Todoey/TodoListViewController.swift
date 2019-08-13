@@ -7,12 +7,15 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
 
     var itemArray : [ToDoItem] = []// = [item1, item2, item3]
     //var defaults = UserDefaults.standard
-     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("toDoItems.plist")
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("toDoItems.plist")
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +43,10 @@ class TodoListViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+               
+        //context.delete(itemArray[indexPath.row])
+        //itemArray.remove(at: indexPath.row)
+
         itemArray[indexPath.row].isDone = !itemArray[indexPath.row].isDone
         
         saveToDoItems()
@@ -65,8 +71,9 @@ class TodoListViewController: UITableViewController {
         //button inside dialog
         let action = UIAlertAction(title: "Add Item", style: .default) { (alertAction) in
  
-            let item = ToDoItem()
+            let item = ToDoItem(context: self.context)
             item.title = textField.text!
+            item.isDone = false
             self.itemArray.append(item)
             
             self.saveToDoItems()
@@ -89,10 +96,24 @@ class TodoListViewController: UITableViewController {
 //            print("Error encoding item array: \(error)")
 //        }
         
+        do {
+            try context.save()
+        } catch {
+            print("Error saving item : \(error)")
+        }
         tableView.reloadData()
     }
     
     func loadItems() {
+        
+        let request : NSFetchRequest<ToDoItem> = ToDoItem.fetchRequest()
+        
+        do {
+            itemArray = try context.fetch(request)
+            print(itemArray)
+        } catch {
+            print("Error fetching data from context: \(error)")
+        }
         
 //        if let data = try? Data(contentsOf: dataFilePath!) {
 //            let decoder = PropertyListDecoder()
