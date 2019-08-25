@@ -13,6 +13,7 @@ class ToDoItem : Object {
     @objc dynamic var title : String = ""
     @objc dynamic var isDone : Bool = false
     @objc dynamic var dateCreated : Date = Date()
+    @objc dynamic var color : String = ""
     
     var parentCategory = LinkingObjects(fromType: Category.self, property: "items")
 }

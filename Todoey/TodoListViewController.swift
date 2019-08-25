@@ -29,6 +29,7 @@ class TodoListViewController: SwipeTableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
+        tableView.separatorStyle = .none
         //searchBar.delegate = self
         //print(dataFilePath!)
         //loadItems()
@@ -49,6 +50,8 @@ class TodoListViewController: SwipeTableViewController {
         if let curItem = toDoItems?[indexPath.row] {
             cell.textLabel?.text = curItem.title
             cell.accessoryType = curItem.isDone ? .checkmark : .none
+            
+            cell.backgroundColor = UIColor(hexString: curItem.color)
         } else {
             cell.textLabel?.text = "No Items Added"
         }
@@ -112,6 +115,7 @@ class TodoListViewController: SwipeTableViewController {
                         let item = ToDoItem()
                         item.title = textField.text!
                         item.isDone = false
+                        item.color = UIColor.randomFlat.hexValue()
                         
                        curCategory.items.append(item)
                     }
