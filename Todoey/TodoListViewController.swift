@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class TodoListViewController: SwipeTableViewController {
 
@@ -34,7 +35,30 @@ class TodoListViewController: SwipeTableViewController {
         //print(dataFilePath!)
         //loadItems()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        if let catColor = selectedCategory?.color {
+            title = selectedCategory!.name
+            updateNavBar(withHexColor: catColor)
+        }
+    }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        updateNavBar(withHexColor: "1D9BF6")
+    }
+    
+    //MARK: - Nav Bar Update
+    func updateNavBar(withHexColor hexColor : String) {
+        guard let navBar = navigationController?.navigationBar else {fatalError()}
+        
+        guard let backColor = UIColor(hexString: hexColor) else {fatalError()}
+        let frontColor = ContrastColorOf(backColor, returnFlat: true)
+        navBar.barTintColor = backColor
+        navBar.tintColor = frontColor
+        navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : frontColor]
+        searchBar.barTintColor = backColor        
+    }
 
     //MARK - TableView Datasource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -51,7 +75,12 @@ class TodoListViewController: SwipeTableViewController {
             cell.textLabel?.text = curItem.title
             cell.accessoryType = curItem.isDone ? .checkmark : .none
             
-            cell.backgroundColor = UIColor(hexString: curItem.color)
+            let perc = CGFloat(indexPath.row) / CGFloat(toDoItems!.count)
+            
+            if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage: perc) {
+                cell.backgroundColor = color
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+            }
         } else {
             cell.textLabel?.text = "No Items Added"
         }
@@ -115,7 +144,7 @@ class TodoListViewController: SwipeTableViewController {
                         let item = ToDoItem()
                         item.title = textField.text!
                         item.isDone = false
-                        item.color = UIColor.randomFlat.hexValue()
+                        //item.color = UIColor.randomFlat.hexValue()
                         
                        curCategory.items.append(item)
                     }
